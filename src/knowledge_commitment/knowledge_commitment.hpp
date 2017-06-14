@@ -49,12 +49,21 @@ struct knowledge_commitment {
     bool operator==(const knowledge_commitment<T1,T2> &other) const;
     bool operator!=(const knowledge_commitment<T1,T2> &other) const;
 
+    void to_special();
+    bool is_special() const;
+
+    knowledge_commitment<T1,T2> mixed_add(const knowledge_commitment<T1,T2> &other) const;
+    knowledge_commitment<T1,T2> dbl() const;
+
     static knowledge_commitment<T1,T2> zero();
     static knowledge_commitment<T1,T2> one();
 
     void print() const;
 
     static size_t size_in_bits();
+
+    static void batch_to_special_all_non_zeros(
+        std::vector<knowledge_commitment<T1,T2> > &vec);
 };
 
 template<typename T1, typename T2, mp_size_t m>

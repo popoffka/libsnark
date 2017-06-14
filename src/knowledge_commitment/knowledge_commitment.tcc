@@ -62,6 +62,33 @@ bool knowledge_commitment<T1,T2>::operator!=(const knowledge_commitment<T1,T2> &
     return !((*this) == other);
 }
 
+template<typename T1, typename T2>
+void knowledge_commitment<T1,T2>::to_special()
+{
+    this->g.to_special();
+    this->h.to_special();
+}
+
+template<typename T1, typename T2>
+bool knowledge_commitment<T1,T2>::is_special() const
+{
+    return this->g->is_special() && this->h->is_special();
+}
+
+template<typename T1, typename T2>
+knowledge_commitment<T1,T2> knowledge_commitment<T1,T2>::mixed_add(
+    const knowledge_commitment<T1,T2> &other) const
+{
+    return knowledge_commitment<T1,T2>(this->g.mixed_add(other.g),
+                                       this->h.mixed_add(other.h));
+}
+
+template<typename T1, typename T2>
+knowledge_commitment<T1,T2> knowledge_commitment<T1,T2>::dbl() const
+{
+    return knowledge_commitment<T1,T2>(this->g.dbl(), this->h.dbl());
+}
+
 template<typename T1, typename T2, mp_size_t m>
 knowledge_commitment<T1,T2> operator*(const libff::bigint<m> &lhs, const knowledge_commitment<T1,T2> &rhs)
 {
@@ -104,6 +131,31 @@ std::istream& operator>>(std::istream& in, knowledge_commitment<T1,T2> &kc)
     libff::consume_OUTPUT_SEPARATOR(in);
     in >> kc.h;
     return in;
+}
+
+template<typename T1, typename T2>
+void knowledge_commitment<T1,T2>::batch_to_special_all_non_zeros(
+    std::vector<knowledge_commitment<T1,T2> > &vec)
+{
+    std::vector<T1> g_special;
+    std::vector<T2> h_special;
+    g_special.reserve(vec.size());
+    h_special.reserve(vec.size());
+
+    for (size_t i = 0; i < vec.size(); i++)
+    {
+        g_special.emplace_back(vec[i].g);
+        h_special.emplace_back(vec[i].h);
+    }
+
+    T1::batch_to_special_all_non_zeros(g_special);
+    T2::batch_to_special_all_non_zeros(h_special);
+
+    for (size_t i = 0; i < vec.size(); i++)
+    {
+        vec[i].g = g_special[i];
+        vec[i].h = h_special[i];
+    }
 }
 
 } // libsnark
