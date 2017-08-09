@@ -43,7 +43,7 @@ add_library(
 )
 target_link_libraries(
   snark
-  
+
   ff
   ${GMP_LIBRARIES}
   ${GMPXX_LIBRARIES}
@@ -196,6 +196,18 @@ add_executable(
 )
 target_link_libraries(
   profile_routing_gadgets
+
+  snark
+)
+
+add_executable(
+  profile_r1cs_ppzksnark
+  EXCLUDE_FROM_ALL
+
+  zk_proof_systems/pcd/r1cs_pcd/r1cs_ppzksnark/profiling/profile_r1cs_ppzksnark.cpp
+)
+target_link_libraries(
+  profile_r1cs_ppzksnark
 
   snark
 )
